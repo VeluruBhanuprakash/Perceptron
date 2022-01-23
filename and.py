@@ -1,10 +1,22 @@
 from utils.all_utils import prepare_data,save_plot
 import pandas as pd
 from utils.model import Perceptron
+import os,logging
+
+log_dir = "logs"
+gate = "AND Gate"
+os.makedirs(log_dir,exist_ok=True)
+logging.basicConfig(
+    filename=os.path.join("logs","running_logs.log"),
+    level=logging.INFO,
+    format="[%(asctime)s: %(levelname)s: %(module)s]: %(message)s",
+    filemode= "a"
+)
 
 
 def main(data,modelName,plotName,eta,epochs):
     df = pd.DataFrame(data)
+    logging.info(f"this is the raw data set :\n{df}\n")
     X, y = prepare_data(df)
     model = Perceptron(eta=eta, epochs=epochs)
     model.fit(X, y)
@@ -20,6 +32,13 @@ if __name__ == "__main__":
     }
     ETA = 0.3  # 0 and 1
     EPOCHS = 10
-    main(data=AND,modelName = "and.model",plotName="and.png",eta=ETA,epochs=EPOCHS)
+    try:
+        logging.info(f">>>>>>>>>>>>>>>>>>>>Starting training for {gate}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        main(data=AND,modelName = "and.model",plotName="and.png",eta=ETA,epochs=EPOCHS)
+        logging.info(f"<<<<<<<<<<<<<<<<<<<<<<{gate} Training completed <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n")
+    except Exception as e:
+        logging.exception(str(e))
+        raise e
+
 
 
